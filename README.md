@@ -10,6 +10,10 @@ Add `deepQuerySelector` and `deepQuerySelectorAll` method to `document` and `Ele
 npm i deep-query-selector
 ```
 
+```ts
+import 'https://cdn.skypack.dev/deep-query-selector';
+```
+
 ## Example
 
 ```ts
