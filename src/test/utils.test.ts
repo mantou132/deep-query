@@ -13,6 +13,7 @@ describe('>>', () => {
     expect(document.deepQuerySelector('test-parent >> #parent')).to.equal(parentDiv);
   });
   it('element `>>` query', () => {
+    expect(parent.deepQuerySelector('>> div')).to.equal(parentDiv);
     expect(parent.deepQuerySelector('test-child >> div')).to.equal(childDiv);
     expect(parent.deepQuerySelector('test-child >> .child')).to.equal(childDiv);
     expect(parent.deepQuerySelector('test-child >> #child')).to.equal(childDiv);
@@ -27,6 +28,7 @@ describe('>>>', () => {
   });
 
   it('element `>>>` query', () => {
+    expect(document.body.deepQuerySelector('>>> div')).to.equal(childDiv);
     expect(document.body.deepQuerySelector('test-parent >>> div')).to.equal(childDiv);
     expect(document.body.deepQuerySelector('test-parent >>> .child')).to.equal(childDiv);
     expect(document.body.deepQuerySelector('test-parent >>> #child')).to.equal(childDiv);

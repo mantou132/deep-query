@@ -22,3 +22,5 @@ class Parent extends HTMLElement {
 customElements.define('test-parent', Parent);
 
 document.body.append(new Parent());
+
+console.log(document.querySelector('test-parent')?.deepQuerySelectorAll('>>> div'));
