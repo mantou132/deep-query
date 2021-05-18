@@ -1,8 +1,34 @@
 import { expect } from '@open-wc/testing';
-import { add } from '../lib/utils';
+import '../examples/hello';
 
-describe('utils 测试', () => {
-  it('2 add 3 = 5', () => {
-    expect(add(2, 3)).to.equal(5);
+const parent = document.querySelector('test-parent')!;
+const parentDiv = parent.shadowRoot?.querySelector('div');
+const child = parent.shadowRoot?.querySelector('test-child');
+const childDiv = child?.shadowRoot?.querySelector('div');
+
+describe('>>', () => {
+  it('document `>>` query', () => {
+    expect(document.deepQuerySelector('test-parent >> div')).to.equal(parentDiv);
+    expect(document.deepQuerySelector('test-parent >> .parent')).to.equal(parentDiv);
+    expect(document.deepQuerySelector('test-parent >> #parent')).to.equal(parentDiv);
+  });
+  it('element `>>` query', () => {
+    expect(parent.deepQuerySelector('test-child >> div')).to.equal(childDiv);
+    expect(parent.deepQuerySelector('test-child >> .child')).to.equal(childDiv);
+    expect(parent.deepQuerySelector('test-child >> #child')).to.equal(childDiv);
+  });
+});
+
+describe('>>>', () => {
+  it('document `>>>` query', () => {
+    expect(document.deepQuerySelector('body >>> div')).to.equal(childDiv);
+    expect(document.deepQuerySelector('body >>> .child')).to.equal(childDiv);
+    expect(document.deepQuerySelector('body >>> #child')).to.equal(childDiv);
+  });
+
+  it('element `>>>` query', () => {
+    expect(document.body.deepQuerySelector('test-parent >>> div')).to.equal(childDiv);
+    expect(document.body.deepQuerySelector('test-parent >>> .child')).to.equal(childDiv);
+    expect(document.body.deepQuerySelector('test-parent >>> #child')).to.equal(childDiv);
   });
 });
