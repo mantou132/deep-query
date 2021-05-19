@@ -25,34 +25,65 @@ function getSelfAndAllSubShadowRoots(containers: ParentNode[]) {
   return [...getSelfAndSelfShadowRoot(containers), ...getAllSubShadowRoots(containers)];
 }
 
+// NOTE: Check shadowDOM first
 // FIXME
 function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
-  const selectors = deepSelector.split(' ');
-  return selectors.reduce((eles, selector) => {
-    if (!selector.trim()) return eles;
-    return eles
+  if (!deepSelector) return [];
+  if (!containers.length) return [];
+
+  const nodeList: Element[] = [];
+
+  // current css scope
+  nodeList.push(
+    ...containers
       .map((container) => {
-        const childs = [...container.querySelectorAll(selector)];
-        return [...queryAll(selector, getAllShadowRoots(eles)), ...childs];
+        return [...container.querySelectorAll(deepSelector)];
       })
-      .flat() as Element[];
-  }, containers) as Element[];
+      .flat(),
+  );
+
+  const selectors = deepSelector.split(/(?:\w)\s+(?:\w)/).filter((e) => !!e.trim());
+
+  let prevSelector = '';
+  for (let i = 0; i < selectors.length; i++) {
+    const nextContainers =
+      prevSelector === ''
+        ? containers
+        : containers
+            .map((container) => {
+              return [...container.querySelectorAll(prevSelector)];
+            })
+            .flat();
+
+    nodeList.push(...queryAll(deepSelector, getAllShadowRoots(nextContainers)));
+
+    prevSelector = `${prevSelector} ${selectors[i]}`;
+  }
+
+  return nodeList;
 }
 
 function querySelectorAll(deepSelector: string, containers: ParentNode[]): Element[] {
+  if (!deepSelector.trim()) return containers as Element[];
   if (deepSelector.includes('>>>')) {
     const selectors = deepSelector.split('>>>');
 
     if (selectors.length > 2) throw new Error('Cannot use multiple `>>>`');
     if (selectors[1] && selectors[1].includes('>>')) throw new Error('Cannot use `>>` after `>>>`');
-    return [
-      ...new Set(queryAll(selectors[1], selectors[0].trim() ? querySelectorAll(selectors[0], containers) : containers)),
-    ];
+    if (!selectors[1].trim()) throw new Error('Cannot be empty after `>>>`');
+
+    const deepBeforeContainers = querySelectorAll(selectors[0], containers);
+    const all = queryAll(selectors[1], deepBeforeContainers);
+    // console.log(all);
+    return [...new Set(all)];
   } else {
     const selectors = deepSelector.split('>>');
-    return selectors.reduce((eles, selector, index, arr) => {
+
+    if (!selectors[selectors.length - 1].trim()) throw new Error('Cannot be empty after `>>`');
+
+    return selectors.reduce((eles, selector, index) => {
       if (!selector.trim()) return eles;
-      const isLastSelector = index === arr.length - 1;
+      const isLastSelector = index === selectors.length - 1;
       return eles
         .map((container) => {
           const childs = [...container.querySelectorAll(selector)];
@@ -102,4 +133,5 @@ Element.prototype.deepQuerySelector = function (selector: string) {
   return querySelector(selector, getSelfAndSelfShadowRoot([this]));
 };
 
-export {};
+export const deepQuerySelector = document.deepQuerySelector.bind(document);
+export const deepQuerySelectorAll = document.deepQuerySelectorAll.bind(document);

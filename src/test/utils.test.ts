@@ -22,14 +22,14 @@ describe('>>', () => {
 
 describe('>>>', () => {
   it('document `>>>` query', () => {
-    expect(document.deepQuerySelector('body >>> div')).to.equal(childDiv);
+    expect(document.deepQuerySelector('body >>> div')).to.equal(parentDiv);
     expect(document.deepQuerySelector('body >>> .child')).to.equal(childDiv);
     expect(document.deepQuerySelector('body >>> #child')).to.equal(childDiv);
   });
 
   it('element `>>>` query', () => {
-    expect(document.body.deepQuerySelector('>>> div')).to.equal(childDiv);
-    expect(document.body.deepQuerySelector('test-parent >>> div')).to.equal(childDiv);
+    expect(document.body.deepQuerySelector('>>> div')).to.equal(parentDiv);
+    expect(document.body.deepQuerySelector('test-parent >>> div')).to.equal(parentDiv);
     expect(document.body.deepQuerySelector('test-parent >>> .child')).to.equal(childDiv);
     expect(document.body.deepQuerySelector('test-parent >>> #child')).to.equal(childDiv);
   });
