@@ -26,7 +26,6 @@ function getSelfAndAllSubShadowRoots(containers: ParentNode[]) {
 }
 
 // NOTE: Check shadowDOM first
-// FIXME
 function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
   if (!deepSelector) return [];
   if (!containers.length) return [];
@@ -64,7 +63,8 @@ function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
 }
 
 function querySelectorAll(deepSelector: string, containers: ParentNode[]): Element[] {
-  if (!deepSelector.trim()) return containers as Element[];
+  if (!deepSelector.trim()) throw new Error(`'${deepSelector}' is not a valid selector`);
+
   if (deepSelector.includes('>>>')) {
     const selectors = deepSelector.split('>>>');
 
@@ -72,17 +72,17 @@ function querySelectorAll(deepSelector: string, containers: ParentNode[]): Eleme
     if (selectors[1] && selectors[1].includes('>>')) throw new Error('Cannot use `>>` after `>>>`');
     if (!selectors[1].trim()) throw new Error('Cannot be empty after `>>>`');
 
-    const deepBeforeContainers = querySelectorAll(selectors[0], containers);
-    const all = queryAll(selectors[1], deepBeforeContainers);
-    // console.log(all);
-    return [...new Set(all)];
+    const deepBeforeContainers = selectors[0].trim() ? querySelectorAll(selectors[0], containers) : containers;
+    return queryAll(selectors[1], deepBeforeContainers);
   } else {
     const selectors = deepSelector.split('>>');
 
     if (!selectors[selectors.length - 1].trim()) throw new Error('Cannot be empty after `>>`');
 
     return selectors.reduce((eles, selector, index) => {
-      if (!selector.trim()) return eles;
+      // Allow `>>` beginning
+      if (!selector.trim()) return getSelfAndSelfShadowRoot(eles);
+
       const isLastSelector = index === selectors.length - 1;
       return eles
         .map((container) => {
@@ -126,11 +126,11 @@ Document.prototype.deepQuerySelector = function (selector: string) {
 };
 
 Element.prototype.deepQuerySelectorAll = function (selector: string) {
-  return querySelectorAll(selector, getSelfAndSelfShadowRoot([this]));
+  return querySelectorAll(selector, [this]);
 };
 
 Element.prototype.deepQuerySelector = function (selector: string) {
-  return querySelector(selector, getSelfAndSelfShadowRoot([this]));
+  return querySelector(selector, [this]);
 };
 
 export const deepQuerySelector = document.deepQuerySelector.bind(document);

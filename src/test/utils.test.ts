@@ -8,26 +8,31 @@ const childDiv = child?.shadowRoot?.querySelector('div');
 
 describe('>>', () => {
   it('document `>>` query', () => {
+    expect(document.deepQuerySelectorAll('test-parent >> *')).to.have.length(2);
     expect(document.deepQuerySelector('test-parent >> div')).to.equal(parentDiv);
     expect(document.deepQuerySelector('test-parent >> .parent')).to.equal(parentDiv);
     expect(document.deepQuerySelector('test-parent >> #parent')).to.equal(parentDiv);
   });
   it('element `>>` query', () => {
+    expect(parent.deepQuerySelectorAll('>> *')).to.have.length(2);
     expect(parent.deepQuerySelector('>> div')).to.equal(parentDiv);
-    expect(parent.deepQuerySelector('test-child >> div')).to.equal(childDiv);
-    expect(parent.deepQuerySelector('test-child >> .child')).to.equal(childDiv);
-    expect(parent.deepQuerySelector('test-child >> #child')).to.equal(childDiv);
+    expect(parent.deepQuerySelector('>> test-child >> div')).to.equal(childDiv);
+    expect(parent.deepQuerySelector('>> test-child >> .child')).to.equal(childDiv);
+    expect(parent.deepQuerySelector('>> test-child >> #child')).to.equal(childDiv);
   });
 });
 
 describe('>>>', () => {
   it('document `>>>` query', () => {
+    expect(document.deepQuerySelectorAll('>>> test-child')).to.have.length(1);
     expect(document.deepQuerySelector('body >>> div')).to.equal(parentDiv);
     expect(document.deepQuerySelector('body >>> .child')).to.equal(childDiv);
     expect(document.deepQuerySelector('body >>> #child')).to.equal(childDiv);
   });
 
   it('element `>>>` query', () => {
+    expect(parent.deepQuerySelectorAll('>>> div')).to.have.length(2);
+    expect(parent.deepQuerySelectorAll('>>> .child')).to.have.length(1);
     expect(document.body.deepQuerySelector('>>> div')).to.equal(parentDiv);
     expect(document.body.deepQuerySelector('test-parent >>> div')).to.equal(parentDiv);
     expect(document.body.deepQuerySelector('test-parent >>> .child')).to.equal(childDiv);
