@@ -4,6 +4,8 @@ Support over the ShadowDOM boundary query element.
 
 Add `deepQuerySelector` and `deepQuerySelectorAll` method to `document` and `Element`, these methods support `>>`, `>>>` selector.
 
+Note: `DeepQuerySelectorall` return array and not sort in DOM Tree.
+
 # Install
 
 ```bash

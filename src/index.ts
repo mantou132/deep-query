@@ -41,12 +41,12 @@ function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
       .flat(),
   );
 
-  const selectors = deepSelector.split(/(?:\w)\s+(?:\w)/).filter((e) => !!e.trim());
+  const selectors = deepSelector.split(' ').filter((e) => !!e.trim());
 
   let prevSelector = '';
   for (let i = 0; i < selectors.length; i++) {
     const nextContainers =
-      prevSelector === ''
+      i === 0
         ? containers
         : containers
             .map((container) => {
@@ -54,7 +54,13 @@ function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
             })
             .flat();
 
-    nodeList.push(...queryAll(deepSelector, getAllShadowRoots(nextContainers)));
+    const shadowRoots = getAllShadowRoots(nextContainers);
+
+    if (i !== 0) {
+      nodeList.push(...queryAll(selectors.slice(i).join(' '), shadowRoots));
+    }
+
+    nodeList.push(...queryAll(deepSelector, shadowRoots));
 
     prevSelector = `${prevSelector} ${selectors[i]}`;
   }
@@ -73,7 +79,8 @@ function querySelectorAll(deepSelector: string, containers: ParentNode[]): Eleme
     if (!selectors[1].trim()) throw new Error('Cannot be empty after `>>>`');
 
     const deepBeforeContainers = selectors[0].trim() ? querySelectorAll(selectors[0], containers) : containers;
-    return queryAll(selectors[1], deepBeforeContainers);
+    const all = queryAll(selectors[1], deepBeforeContainers);
+    return [...new Set(all)];
   } else {
     const selectors = deepSelector.split('>>');
 
