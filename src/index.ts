@@ -68,7 +68,7 @@ function queryAll(deepSelector: string, containers: ParentNode[]): Element[] {
   return nodeList;
 }
 
-function querySelectorAll(deepSelector: string, containers: ParentNode[]): Element[] {
+export function querySelectorAll(deepSelector: string, containers: ParentNode[]): Element[] {
   if (!deepSelector.trim()) throw new Error(`'${deepSelector}' is not a valid selector`);
 
   if (deepSelector.includes('>>>')) {
@@ -105,7 +105,7 @@ function querySelectorAll(deepSelector: string, containers: ParentNode[]): Eleme
   }
 }
 
-function querySelector(deepSelector: string, containers: ParentNode[]) {
+export function querySelector(deepSelector: string, containers: ParentNode[]) {
   return querySelectorAll(deepSelector, containers)[0] || null;
 }
 
