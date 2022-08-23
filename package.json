@@ -1,12 +1,13 @@
 {
   "name": "deep-query-selector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Support over the ShadowDOM boundary query element",
   "main": "dist/index.js",
   "module": "index.js",
   "typings": "index.d.ts",
   "files": [
     "/dist/",
+    "/plugins/",
     "/index.js",
     "/index.js.map",
     "/index.d.ts",
